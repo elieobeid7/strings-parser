@@ -28,7 +28,7 @@ I don't know, might change in the future, my reasoning was, there's going to be 
 
 ## How to use the strings extracted?
 
-The first version will support laravel translation files, and then JSON translation files will be supported, perhaps others too
+The first version will support laravel translation files, and then JSON translation files will be supported soon, perhaps others too
 
 ## What kind of strings does it detect?
 
