@@ -31,6 +31,8 @@ class Seperator(Enum):
     DOUBLE_QUOTE_DOT = '."'
     DOUBLE_QUOTE_ASSOC = '=>"'
     SINGLE_QUOTE_ASSOC = "=>'"
+    DOUBLE_QUOTE_FUNCTION = '("'
+    SINGLE_QUOTE_FUNCTION = "('"
     
 class State(Enum):
     RESPONSE = 0
@@ -40,4 +42,5 @@ class State(Enum):
     MULTILINES = 4
     ASSOC_ARRAY = 5
     STRING_VARIABLE = 6
+    FUNCTION = 7
 
