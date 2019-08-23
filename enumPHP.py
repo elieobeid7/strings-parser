@@ -3,12 +3,14 @@ class Seperator(Enum):
     SEMICOL = ";"
     PHPSTART = "<?"
     PHPEND = '?>'
-    DOT = "."
+    DOT = "." 
     ARRAY_OPEN = "["
     ARRAY_CLOSE = "]"
     ASSOC = "=>" 
     PHP = "<?php"
     COMMENT = "//"
+    MULTILINES_COMMENT_START = '/*'
+    MULTILINES_COMMENT_END = '*/'
     NEW_LINE = "\n"
     VARIABLE = "$"
     CONST = "const"
@@ -24,11 +26,16 @@ class Seperator(Enum):
     DOUBLE_QUOTE_EQUAL = '="'
     SINGLE_QUOTE_COMMA = "',"
     DOUBLE_QUOTE_COMMA = '",'
+    END = ';'
+    SINGLE_QUOTE_DOT = ".'"
+    DOUBLE_QUOTE_DOT = '."'
+    DOUBLE_QUOTE_ASSOC = '=>"'
+    SINGLE_QUOTE_ASSOC = "=>'"
     
 class State(Enum):
     RESPONSE = 0
     CONST = 1
-    STRING = 2
+    PHP_STRING = 2
     ARRAY = 3
     MULTILINES = 4
     ASSOC_ARRAY = 5
