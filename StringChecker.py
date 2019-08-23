@@ -11,9 +11,6 @@ class StringChecker:
         self.fileExt = fileExt
         self.folder = folder
 
-
-
-
     # get files having a predefined prefix
     def getFiles(self):
         targetedFile = self.filePrefix + self.fileExt
@@ -30,7 +27,6 @@ class StringChecker:
         fileName = Path(fileName).stem # remove path and extension
         fileName = fileName.replace(self.filePrefix, '') # remove prefix
         return fileName
-
 
 
     def locateExpressionSemiCol(self,fileName):
@@ -53,26 +49,20 @@ class StringChecker:
 
                     if mComment == False: # if multiline comment  is false 
                     
-                        singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
-                        doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
+                        if not expression.startswith(Seperator.PHPSTART) and not expression.startswith(Seperator.PHPEND) and not expression.startswith(Seperator.COMMENT) and mComment == false:
+                            singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
+                            doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
 
-                        if expression.endswith(Seperator.End):
-                              # end of expression
 
-                            expression = previousExp.join(expression)
-
-                            if Seperator.RESPONSE.value in expression:
-                                result = State.RESPONSE.value
-                                writeStringsToTranslationFilePHP(expression, lineCounter, result)
-                            
-                            else: 
+                            if expression.endswith(Seperator.End):
+                                # end of expression
+                                expression = previousExp.join(expression)
                                 result = analyzePHP(expression, singleQuotesCount, doubleQuotesCount)
-                            previousExp = ''
+                                writeStringsToTranslationFilePHP(expression, lineCounter, result)
+                                previousExp = ''
+                            
+                            # paragraph
+                            else:
+                                previousExp = previousExp.join(expression)
 
-
-                        # paragraph
-                        else:
-                            if not expression.startswith(Seperator.PHPSTART) and not expression.startswith(Seperator.PHPEND) and not expression.startswith(Seperator.COMMENT) and mComment == false: 
-                                if expression.startswith(Seperator.DOUBLE_QUOTE_EQUAL) or expression.startswith(Seperator.SINGLE_QUOTE_EQUAL) or Seperator.DOUBLE_QUOTE_DOT in expression or Seperator.SINGLE_QUOTE_DOT in expression or Seperator.DOUBLE_QUOTE_ASSOC in expression or Seperator.SINGLE_QUOTE_ASSOC in expression:
-                                    previousExp = previousExp.join(expression)
-
+            expression = ''
