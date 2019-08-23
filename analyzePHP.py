@@ -19,6 +19,10 @@ def analyzePHP(expression,singleQuotesCount,doubleQuotesCount):
     elif Seperator.DOUBLE_QUOTE_DOT.value in expression or Seperator.DOUBLE_QUOTE.value in expression:
         return State.STRING_VARIABLE.value
 
-    # get strings inside functions, such as the response function
-    elif Seperator.DOUBLE_QUOTE_FUNCTION.value in expression or Seperator.SINGLE_QUOTE_FUNCTION.value in expression:
-        return State.FUNCTION.value
+    # get none void responses
+    elif Seperator.RESPONSE.value in expression and not Seperator.VOID.value in expression:
+        return State.RESPONSE.value
+
+  # get strings inside functions, such as the response function
+  # elif Seperator.DOUBLE_QUOTE_FUNCTION.value in expression or Seperator.SINGLE_QUOTE_FUNCTION.value in expression:
+    #   return State.FUNCTION.value
