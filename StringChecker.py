@@ -56,15 +56,19 @@ class StringChecker:
                         singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
                         doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
 
-                        if Seperator.RESPONSE.value in expression:
-                            result = State.RESPONSE.value
-                            writeStringsToTranslationFilePHP(expression,lineCounter,result)
+                        if expression.endswith(Seperator.End):
+                              # end of expression
 
-                            # one line expression
-                        if expression.endswith(Seperator.DOUBLE_QUOTE_END.value):
-                            expression = previousExp.join(expression)      
-                            result = analyzePHP(expression, singleQuotesCount, doubleQuotesCount)
+                            expression = previousExp.join(expression)
+
+                            if Seperator.RESPONSE.value in expression:
+                                result = State.RESPONSE.value
+                                writeStringsToTranslationFilePHP(expression, lineCounter, result)
+                            
+                            else: 
+                                result = analyzePHP(expression, singleQuotesCount, doubleQuotesCount)
                             previousExp = ''
+
 
                         # paragraph
                         else:
