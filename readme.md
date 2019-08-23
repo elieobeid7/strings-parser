@@ -32,7 +32,7 @@ The first version will support laravel translation files, and then JSON translat
 
 ## What kind of strings does it detect?
 
-Look in `tests/testAction.php`
+Look at `tests/testAction.php`
 
 ## Why doesn't it remove comments in read mode?
 
