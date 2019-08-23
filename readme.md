@@ -19,7 +19,7 @@ I'm using them everywhere, so having them as strings is so much faster than cons
 
 ## How to use it?
 
-it's almost done, please check main.py, once done, I'll add all the details. analyzePHP.py still needs some fixing.
+please check main.py, once done, I'll add all the details soon.
 
 
 ## Why did you do such architecture? One class and functions?
