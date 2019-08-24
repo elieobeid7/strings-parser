@@ -37,19 +37,19 @@ class StringChecker:
                 if char == Seperator.NEW_LINE.value:
                     lineCounter+=1
 
-                if expression.startswith(Seperator.MULTILINES_COMMENT_START):
+                if expression.startswith(Seperator.MULTILINES_COMMENT_START.value):
                     mComment = True
-                elif expression.startswith(Seperator.MULTILINES_COMMENT_END) and mComment == True:
+                elif expression.startswith(Seperator.MULTILINES_COMMENT_END.value) and mComment == True:
                     mComment = False
 
                     if mComment == False: # if multiline comment  is false 
                     
-                        if not expression.startswith(Seperator.PHPSTART) and not expression.startswith(Seperator.PHPEND) and not expression.startswith(Seperator.COMMENT) and mComment == false:
+                        if not expression.startswith(Seperator.PHPSTART.value) and not expression.startswith(Seperator.PHPEND.value) and not expression.startswith(Seperator.COMMENT.value) and mComment == False:
                             singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
                             doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
 
 
-                            if expression.endswith(Seperator.End):
+                            if expression.endswith(Seperator.End.value):
                                 # end of expression
                                 expression = ''.join([previousExp, expression])
                                 result = analyzePHP(expression, singleQuotesCount, doubleQuotesCount)

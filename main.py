@@ -10,4 +10,4 @@ files = StringChecker(filePrefix, fileEXt, folder)
 fileNames  = files.getFiles()
 
 for file in fileNames:
-    print(file)
+    files.locateExpressionSemiCol(file)
