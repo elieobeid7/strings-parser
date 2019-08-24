@@ -2,9 +2,12 @@ from StringChecker import StringChecker
 
 filePrefix = 'Action' 
 fileEXt = ".php"
-folder = '/home/elie/Desktop/RayLation/main'
+folder = '/home/elie/Desktop/strings parser/local_tests'
 
 # Create a new ComplexNumber object
 files = StringChecker(filePrefix, fileEXt, folder)
 
-print(files)
+fileNames  = files.getFiles()
+
+for file in fileNames:
+    print(file)

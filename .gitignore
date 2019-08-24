@@ -2,4 +2,3 @@
 *.pyc
 __pycache__/
 local_tests/
-main.py
