@@ -1,8 +1,8 @@
-import os
 from pathlib import Path
 from enumPHP import Seperator
 from analyzePHP import analyzePHP
 from writer import writeStringsToTranslationFilePHP
+import glob
 
 
 class StringChecker:
@@ -13,14 +13,10 @@ class StringChecker:
 
     # get files having a predefined prefix
     def getFiles(self):
-        targetedFile = self.filePrefix + self.fileExt
-        files = []
-        for fileName in os.listdir(self.folder):
-            if targetedFile in fileName:
-                key = os.path.dirname(os.path.abspath(fileName)) + fileName
-                files.append(key)
+        targetedFiles = ''.join([self.filePrefix, self.fileExt])
+        folder = ''.join([self.folder, '/**/*', targetedFiles])
+        files = glob.glob(folder, recursive=True)
         return files
-
 
     # Get filename without path, prefix or extension
     def getFileNameBase(self, fileName): 
@@ -37,7 +33,7 @@ class StringChecker:
         with open(fileName) as text:
             data = text.read()
             for char in data:
-                expression.join(char)
+                expression = ''.join([expression, char])
                 expression = expression.replace(" ", "")
                 if char == Seperator.NEW_LINE.value:
                     lineCounter+=1
@@ -56,13 +52,14 @@ class StringChecker:
 
                             if expression.endswith(Seperator.End):
                                 # end of expression
-                                expression = previousExp.join(expression)
+                                expression = ''.join([previousExp, expression])
                                 result = analyzePHP(expression, singleQuotesCount, doubleQuotesCount)
                                 writeStringsToTranslationFilePHP(expression, lineCounter, result)
                                 previousExp = ''
                             
                             # paragraph
                             else:
-                                previousExp = previousExp.join(expression)
+                                previousExp = ''.join([previousExp, expression])
+
 
             expression = ''
