@@ -13,8 +13,7 @@ class StringChecker:
 
     # get files having a predefined prefix
     def getFiles(self):
-        targetedFiles = ''.join([self.filePrefix, self.fileExt])
-        folder = ''.join([self.folder, '/**/*', targetedFiles])
+        folder = ''.join([self.folder, '/**/*', self.filePrefix, self.fileExt])
         files = glob.glob(folder, recursive=True)
         return files
 
