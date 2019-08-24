@@ -29,6 +29,7 @@ class StringChecker:
         expression = ''
         previousExp = ''
         mComment = False
+   
         with open(fileName) as text:
             data = text.read()
             for char in data:
@@ -36,29 +37,39 @@ class StringChecker:
                 expression = expression.replace(" ", "")
                 if char == Seperator.NEW_LINE.value:
                     lineCounter+=1
+                    #print('new line')
 
                 if expression.startswith(Seperator.MULTILINES_COMMENT_START.value):
                     mComment = True
+                    #print('multiline comment start')
                 elif expression.startswith(Seperator.MULTILINES_COMMENT_END.value) and mComment == True:
                     mComment = False
+                    #print('multiline comment end')
 
-                    if mComment == False: # if multiline comment  is false 
-                    
-                        if not expression.startswith(Seperator.PHPSTART.value) and not expression.startswith(Seperator.PHPEND.value) and not expression.startswith(Seperator.COMMENT.value) and mComment == False:
-                            singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
-                            doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
+                if mComment == False: # if multiline comment  is false 
+                   # print('we can start')
+                    if not expression.startswith(Seperator.PHPSTART.value) and not expression.startswith(Seperator.PHPEND.value) and not expression.startswith(Seperator.COMMENT.value) and mComment == False:
+                        singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
+                        doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
+                     #   print ('getting expression')
 
 
-                            if expression.endswith(Seperator.End.value):
-                                # end of expression
-                                expression = ''.join([previousExp, expression])
-                                result = analyzePHP(expression, singleQuotesCount, doubleQuotesCount)
+                        if expression.endswith(Seperator.END.value):
+                            # end of expression
+                            expression = ''.join([previousExp, expression])
+                            result = analyzePHP(expression, singleQuotesCount, doubleQuotesCount)
+                        #    print('analyzing')
+                            previousExp = ''
+                            if result is not None:
+                         #       print('result is ' + str(result))
                                 writeStringsToTranslationFilePHP(expression, lineCounter, result)
-                                previousExp = ''
                             
-                            # paragraph
-                            else:
-                                previousExp = ''.join([previousExp, expression])
+                        
+                        # paragraph
+                        else:
+                            previousExp = ''.join([previousExp, expression])
+                 #           print('paragraph')
 
 
-            expression = ''
+                expression = ''
+                #print('next expression')

@@ -1,5 +1,7 @@
 from enum import Enum
 class Seperator(Enum):
+    
+    END = ';'
     SEMICOL = ";"
     PHPSTART = "<?"
     PHPEND = '?>'
@@ -26,7 +28,7 @@ class Seperator(Enum):
     DOUBLE_QUOTE_EQUAL = '="'
     SINGLE_QUOTE_COMMA = "',"
     DOUBLE_QUOTE_COMMA = '",'
-    END = ';'
+  
     SINGLE_QUOTE_DOT = ".'"
     DOUBLE_QUOTE_DOT = '."'
     DOUBLE_QUOTE_ASSOC = '=>"'
