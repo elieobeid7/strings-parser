@@ -28,13 +28,17 @@ class Seperator(Enum):
     DOUBLE_QUOTE_EQUAL = '="'
     SINGLE_QUOTE_COMMA = "',"
     DOUBLE_QUOTE_COMMA = '",'
-  
-    SINGLE_QUOTE_DOT = ".'"
-    DOUBLE_QUOTE_DOT = '."'
+    SINGLE_QUOTE_DOT = "'."
+    DOUBLE_QUOTE_DOT = '".'
+    DOT_SINGLE_QUOTE = ".'"
+    DOT_DOUBLE_QUOTE = '."'
     DOUBLE_QUOTE_ASSOC = '=>"'
     SINGLE_QUOTE_ASSOC = "=>'"
     DOUBLE_QUOTE_FUNCTION = '("'
     SINGLE_QUOTE_FUNCTION = "('"
+    # VERBS = "verbs"
+    # RULES = "inputRules"
+    # PRIVATE = "private"
     
 class State(Enum):
     RESPONSE = 0

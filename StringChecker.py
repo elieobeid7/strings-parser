@@ -1,6 +1,6 @@
 from pathlib import Path
 from enumPHP import Seperator
-from analyzePHP import analyzePHP
+from analyzePHP import analyzePHP, filterText
 from writer import writeStringsToTranslationFilePHP
 import glob
 
@@ -16,6 +16,22 @@ class StringChecker:
         folder = ''.join([self.folder, '/**/*', self.filePrefix, self.fileExt])
         files = glob.glob(folder, recursive=True)
         return files
+
+    def getExpression(self, fileName):
+        expression = ''
+        results = []
+        with open(fileName) as text:
+            data = text.read()
+            for char in data:
+                if char is not Seperator.END.value:
+                    expression = ''.join([expression, char])
+                else:
+                    result = filterText(expression)
+                    expression = ''
+                    if result is not None:
+                        results.append(result)
+
+        return results
 
     # Get filename without path, prefix or extension
     def getFileNameBase(self, fileName): 
@@ -73,3 +89,8 @@ class StringChecker:
 
                 expression = ''
                 #print('next expression')
+
+
+                
+
+

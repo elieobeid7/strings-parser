@@ -1,4 +1,17 @@
 <?php
+
+/*
+
+this = 5;
+this = "aff"
+*/
+
+// a=5;
+
+VERBS = 'protected$verbs';
+RULES = 'protected$inputRules';
+
+const ch = 5;
 const CHECKIN_FORBIDEN = "this is fail";
 const CHECKIN_FORBIDEN_q = 'this is fail';
 

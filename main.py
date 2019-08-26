@@ -2,7 +2,7 @@ from StringChecker import StringChecker
 from enumPHP import Seperator
 filePrefix = 'Action' 
 fileEXt = ".php"
-folder = '/home/elie/Desktop/strings parser/local_tests'
+folder = '/home/elie/Desktop/strings parser/tests'
 
 # Create a new ComplexNumber object
 files = StringChecker(filePrefix, fileEXt, folder)
@@ -10,6 +10,5 @@ files = StringChecker(filePrefix, fileEXt, folder)
 fileNames  = files.getFiles()
 
 
-for file in fileNames:
-    files.locateExpressionSemiCol(file)
-
+for fileName in fileNames:
+    ressult = files.getExpression(fileName)
