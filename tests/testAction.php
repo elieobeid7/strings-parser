@@ -10,6 +10,7 @@ this = "aff"
 
 VERBS = 'protected$verbs';
 RULES = 'protected$inputRules';
+$a = 'a';
 
 const ch = 5;
 const CHECKIN_FORBIDEN = "this is fail";
@@ -32,6 +33,6 @@ $arr =[
     'skip_this_one' => "string 7" . 4,
     $cool =>4
 
-]
+];
 
 ?>

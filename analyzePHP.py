@@ -1,27 +1,37 @@
 from enumPHP import Seperator, State
+import re
 counter = 1
 
+
+def remove_comments(string):
+    pattern = r"(\".*?\"|\'.*?\')|(/\*.*?\*/|//[^\r\n]*$)"
+    # first group captures quoted strings (double or single)
+    # second group captures comments (//single-line or /* multi-line */)
+    regex = re.compile(pattern, re.MULTILINE | re.DOTALL)
+
+    def _replacer(match):
+        # if the 2nd group (capturing comments) is not None,
+        # it means we have captured a non-quoted (real) comment string.
+        if match.group(2) is not None:
+            return ""  # so we will return empty to remove the comment
+        else:  # otherwise, we will return the 1st group
+            return match.group(1)  # captured quoted-string
+    return regex.sub(_replacer, string)
 
 def filterText(expression):
     mcomment = False
     counter = 0
     sentence = ''
-    expression = expression.replace(" ", "")
     for char in expression:
         counter += 1
         sentence = ''.join([sentence, char])
-        if sentence.startswith(Seperator.MULTILINES_COMMENT_START.value):
-            mcomment = True
         if char is Seperator.NEW_LINE.value:
-            if mcomment == True or Seperator.EQUAL.value not in sentence or sentence.startswith(Seperator.COMMENT.value):
+            if  Seperator.EQUAL.value not in sentence:
                 expression = expression[counter:]
                 counter = 0
                 sentence = ''
-                if mcomment == True and sentence.endswith(Seperator.MULTILINES_COMMENT_END.value):
-                    mcomment = False
             else:
                 break
-    print(expression)
     return expression
 
 
@@ -35,24 +45,28 @@ def getPHPStrings(expression, blacklist):
             break
 
     if blacklisted ==False:
+        expression = expression.replace(" ", "")
         singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
         doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
-        if (doubleQuotesCount == 2 and expression.endswith(Seperator.DOUBLE_QUOTE_END.value) \
-            and Seperator.DOUBLE_QUOTE_EQUAL.value in expression) or \
-            (singleQuotesCount == 2 \
-            and expression.endswith(Seperator.SINGLE_QUOTE_END.value) \
-            and Seperator.SINGLE_QUOTE_EQUAL.value in expression):
-                if expression.startswith(Seperator.CONST.value):
-                    return State.CONST.value
-                else: 
-                    return State.PHP_STRING.value
+        print(expression)
+        if doubleQuotesCount == 2 and expression.endswith(Seperator.DOUBLE_QUOTE_END.value) and Seperator.DOUBLE_QUOTE_EQUAL.value in expression:
+            print('here')
+            if expression.startswith(Seperator.CONST.value):
+                return State.CONST.value
+            else: 
+                return State.PHP_STRING.value
+        elif singleQuotesCount == 2 and expression.endswith(Seperator.SINGLE_QUOTE_END.value) and Seperator.SINGLE_QUOTE_EQUAL.value in expression:
+            print('here')
+            if expression.startswith(Seperator.CONST.value):
+                return State.CONST.value
+            else: 
+                return State.PHP_STRING.value
             
         elif  Seperator.DOUBLE_QUOTE_ASSOC.value in expression or Seperator.SINGLE_QUOTE_ASSOC.value in expression:
             return State.ASSOC_ARRAY.value
             
-        elif Seperator.DOUBLE_QUOTE_DOT.value in expression or Seperator.DOT_DOUBLE_QUOTE.value in expression \
-            or Seperator.SINGLE_QUOTE_DOT.value in expression or Seperator.DOT_SINGLE_QUOTE.value in expression:
-                return State.STRING_VARIABLE.value
+        elif Seperator.DOUBLE_QUOTE_DOT.value in expression or Seperator.DOT_DOUBLE_QUOTE.value in expression or Seperator.SINGLE_QUOTE_DOT.value in expression or Seperator.DOT_SINGLE_QUOTE.value in expression:
+            return State.STRING_VARIABLE.value
             
         elif Seperator.RESPONSE.value in expression and Seperator.VOID.value not in expression:
             return State.RESPONSE.value

@@ -1,15 +1,15 @@
 from pathlib import Path
 from enumPHP import Seperator
-from analyzePHP import analyzePHP, filterText
+from analyzePHP import analyzePHP, filterText, getPHPStrings, remove_comments
 from writer import writeStringsToTranslationFilePHP
 import glob
-
 
 class StringChecker:
     def __init__(self, filePrefix, fileExt, folder):
         self.filePrefix = filePrefix
         self.fileExt = fileExt
         self.folder = folder
+
 
     # get files having a predefined prefix
     def getFiles(self):
@@ -20,8 +20,9 @@ class StringChecker:
     def getExpression(self, fileName):
         expression = ''
         results = []
+        blacklist = ['$private', '$verbs', '$inputRules']
         with open(fileName) as text:
-            data = text.read()
+            data = remove_comments(text.read())
             for char in data:
                 if char is not Seperator.END.value:
                     expression = ''.join([expression, char])
@@ -29,9 +30,8 @@ class StringChecker:
                     result = filterText(expression)
                     expression = ''
                     if result is not None:
-                        results.append(result)
-
-        return results
+                        result = getPHPStrings(result, blacklist)
+                   
 
     # Get filename without path, prefix or extension
     def getFileNameBase(self, fileName): 
