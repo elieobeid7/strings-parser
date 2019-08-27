@@ -24,9 +24,8 @@ class StringChecker:
         with open(fileName) as text:
             data = remove_comments(text.read())
             for char in data:
-                if char is not Seperator.END.value:
-                    expression = ''.join([expression, char])
-                else:
+                expression = ''.join([expression, char])
+                if char is Seperator.END.value:
                     result = filterText(expression)
                     expression = ''
                     if result is not None:

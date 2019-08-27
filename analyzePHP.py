@@ -45,12 +45,20 @@ def getPHPStrings(expression, blacklist):
             break
 
     if blacklisted ==False:
-        expression = expression.replace(" ", "")
         singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
         doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
-        print(expression)
+        expression = expression.replace(" ", "")
+
+
+        #if expression.endswith(Seperator.DOUBLE_QUOTE_END.value):
+        #   print(expression)
+        # if Seperator.DOUBLE_QUOTE_EQUAL.value in expression:
+        #     print(expression)
+
+       
+
         if doubleQuotesCount == 2 and expression.endswith(Seperator.DOUBLE_QUOTE_END.value) and Seperator.DOUBLE_QUOTE_EQUAL.value in expression:
-            print('here')
+            print('expression')
             if expression.startswith(Seperator.CONST.value):
                 return State.CONST.value
             else: 

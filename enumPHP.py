@@ -17,8 +17,8 @@ class Seperator(Enum):
     VARIABLE = "$"
     CONST = "const"
     EQUAL = "="
-    SINGLE_QUOTE = '"'
-    DOUBLE_QUOTE = "'"
+    SINGLE_QUOTE = "'"
+    DOUBLE_QUOTE = '"'
     COMMA = ','
     RESPONSE = 'response->'
     VOID = '()'
