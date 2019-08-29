@@ -1,6 +1,6 @@
 from pathlib import Path
-from enumPHP import Seperator
-from analyzePHP import analyzePHP, filterText, getPHPStrings, remove_comments
+from enumPHP import Seperator, State
+from analyzePHP import  filterText, getPHPStrings, remove_comments
 from writer import writeStringsToTranslationFilePHP
 import glob
 
@@ -18,10 +18,11 @@ class StringChecker:
         return files
 
     def getExpression(self, fileName):
+        templateName = self.getFileNameBase(fileName)
         expression = ''
-        results = []
         blacklist = ['$private', '$verbs', '$inputRules']
         with open(fileName) as text:
+            constantArr = []
             data = remove_comments(text.read())
             for char in data:
                 expression = ''.join([expression, char])
@@ -29,67 +30,30 @@ class StringChecker:
                     result = filterText(expression)
                     expression = ''
                     if result is not None:
-                        result = getPHPStrings(result, blacklist)
-                   
+                        string = getPHPStrings(result, blacklist)
+                        if string == State.CONST_DOUBLE_QUOTE.value or State.CONST_SINGLE_QUOTE.value:
+                            arr = result.split("=")
+                            constant = arr[0][5:].strip()
+                            sentence = arr[1].strip()
+                            constantArr.append(constant)
+                            sentence = sentence.replace(" ", '_')                            
+                            new_string = ''.join([arr[0].strip(), templateName, '__', sentence])
+                        
+                        elif string == State.STRING_SINGLE_QUOTE.value or State.STRING_DOUBLE_QUOTE.value:
+                            arr = result.split("=")
+                            variable = arr[0].replace("$","").strip()
+                            sentence = arr[1].strip()
+
+                            sentence = sentence.replace(";", ");")
+
+                            new_string = ''.join(
+                                [arr[0].strip(), 'trans(', templateName, '__', sentence])
+                        
+                            
+                        
 
     # Get filename without path, prefix or extension
     def getFileNameBase(self, fileName): 
         fileName = Path(fileName).stem # remove path and extension
         fileName = fileName.replace(self.filePrefix, '') # remove prefix
         return fileName
-
-
-    def locateExpressionSemiCol(self,fileName):
-        lineCounter =1
-        expression = ''
-        previousExp = ''
-        mComment = False
-   
-        with open(fileName) as text:
-            data = text.read()
-            for char in data:
-                expression = ''.join([expression, char])
-                expression = expression.replace(" ", "")
-                if char == Seperator.NEW_LINE.value:
-                    lineCounter+=1
-                    #print('new line')
-
-                if expression.startswith(Seperator.MULTILINES_COMMENT_START.value):
-                    mComment = True
-                    #print('multiline comment start')
-                elif expression.startswith(Seperator.MULTILINES_COMMENT_END.value) and mComment == True:
-                    mComment = False
-                    #print('multiline comment end')
-
-                if mComment == False: # if multiline comment  is false 
-                   # print('we can start')
-                    if not expression.startswith(Seperator.PHPSTART.value) and not expression.startswith(Seperator.PHPEND.value) and not expression.startswith(Seperator.COMMENT.value) and mComment == False:
-                        singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
-                        doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
-                     #   print ('getting expression')
-
-
-                        if expression.endswith(Seperator.END.value):
-                            # end of expression
-                            expression = ''.join([previousExp, expression])
-                            result = analyzePHP(expression, singleQuotesCount, doubleQuotesCount)
-                        #    print('analyzing')
-                            previousExp = ''
-                            if result is not None:
-                         #       print('result is ' + str(result))
-                                writeStringsToTranslationFilePHP(expression, lineCounter, result)
-                            
-                        
-                        # paragraph
-                        else:
-                            previousExp = ''.join([previousExp, expression])
-                 #           print('paragraph')
-
-
-                expression = ''
-                #print('next expression')
-
-
-                
-
-

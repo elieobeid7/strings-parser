@@ -19,7 +19,6 @@ def remove_comments(string):
     return regex.sub(_replacer, string)
 
 def filterText(expression):
-    mcomment = False
     counter = 0
     sentence = ''
     for char in expression:
@@ -35,7 +34,6 @@ def filterText(expression):
     return expression
 
 
-
 def getPHPStrings(expression, blacklist):
     blacklisted = False
 
@@ -49,72 +47,28 @@ def getPHPStrings(expression, blacklist):
         doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
         expression = expression.replace(" ", "")
 
-
-        #if expression.endswith(Seperator.DOUBLE_QUOTE_END.value):
-        #   print(expression)
-        # if Seperator.DOUBLE_QUOTE_EQUAL.value in expression:
-        #     print(expression)
-
-       
-
         if doubleQuotesCount == 2 and expression.endswith(Seperator.DOUBLE_QUOTE_END.value) and Seperator.DOUBLE_QUOTE_EQUAL.value in expression:
-            print('expression')
             if expression.startswith(Seperator.CONST.value):
-                return State.CONST.value
+                return State.CONST_DOUBLE_QUOTE.value
             else: 
-                return State.PHP_STRING.value
+                return State.STRING_DOUBLE_QUOTE.value
         elif singleQuotesCount == 2 and expression.endswith(Seperator.SINGLE_QUOTE_END.value) and Seperator.SINGLE_QUOTE_EQUAL.value in expression:
-            print('here')
             if expression.startswith(Seperator.CONST.value):
-                return State.CONST.value
+                return State.CONST_SINGLE_QUOTE.value
             else: 
-                return State.PHP_STRING.value
+                return State.STRING_SINGLE_QUOTE.value
+        
+        elif Seperator.SINGLE_QUOTE_ASSOC.value in expression:
+            return State.SINGLE_QUOTE_ASSOC_ARRAY.value
+
+        elif  Seperator.DOUBLE_QUOTE_ASSOC.value in expression:
+            return State.DOUBLE_QUOTE_ASSOC_ARRAY.value
+
+        elif Seperator.SINGLE_QUOTE_DOT.value in expression or Seperator.DOT_SINGLE_QUOTE.value in expression:
+            return State.SINGLE_QUOTE_STRING_VARIABLE.value
             
-        elif  Seperator.DOUBLE_QUOTE_ASSOC.value in expression or Seperator.SINGLE_QUOTE_ASSOC.value in expression:
-            return State.ASSOC_ARRAY.value
-            
-        elif Seperator.DOUBLE_QUOTE_DOT.value in expression or Seperator.DOT_DOUBLE_QUOTE.value in expression or Seperator.SINGLE_QUOTE_DOT.value in expression or Seperator.DOT_SINGLE_QUOTE.value in expression:
-            return State.STRING_VARIABLE.value
+        elif Seperator.DOUBLE_QUOTE_DOT.value in expression or Seperator.DOT_DOUBLE_QUOTE.value in expression: 
+            return State.DOUBLE_QUOTE_STRING_VARIABLE.value
             
         elif Seperator.RESPONSE.value in expression and Seperator.VOID.value not in expression:
             return State.RESPONSE.value
-             
-
-
-            
-        
-
-
-
-def analyzePHP(expression,singleQuotesCount,doubleQuotesCount):
-    global counter
-    print(expression + str(counter) + '\n')
-    counter+=1
-    # get all constants
-    if expression.startswith(Seperator.CONST.value):
-        return State.CONST.value
-    
-    # get all php strings without variables
-    elif singleQuotesCount == 2 and expression.endswith(Seperator.SINGLE_QUOTE_END.value):
-        return State.PHP_STRING.value
-    elif doubleQuotesCount ==2 and expression.endswith (Seperator.DOUBLE_QUOTE_END.value):
-        return State.PHP_STRING.value
-
-    # get associative array
-    elif Seperator.DOUBLE_QUOTE_ASSOC.value in expression or Seperator.SINGLE_QUOTE_ASSOC.value in expression:
-        return State.ASSOC_ARRAY.value
-
-    # get strings with variables
-    elif Seperator.DOUBLE_QUOTE_DOT.value in expression or Seperator.SINGLE_QUOTE_DOT.value in expression:
-        return State.STRING_VARIABLE.value
-
-    # get none void responses
-    elif Seperator.RESPONSE.value in expression and not Seperator.VOID.value in expression:
-        return State.RESPONSE.value
-
-  # get strings inside functions, such as the response function
-  # elif Seperator.DOUBLE_QUOTE_FUNCTION.value in expression or Seperator.SINGLE_QUOTE_FUNCTION.value in expression:
-    #   return State.FUNCTION.value
-
-
-
