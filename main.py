@@ -2,13 +2,13 @@ from StringChecker import StringChecker
 from enumPHP import Seperator
 filePrefix = 'Action' 
 fileEXt = ".php"
-folder = '/home/elie/Desktop/strings parser/tests'
-
+folder = '/home/elie/Desktop/g'
 # Create a new ComplexNumber object
 files = StringChecker(filePrefix, fileEXt, folder)
 
-fileNames  = files.getFiles()
+paths  = files.getFiles()
 
 
-for fileName in fileNames:
-    ressult = files.getExpression(fileName)
+for path in paths:
+    files.getStrings(path,False)
+

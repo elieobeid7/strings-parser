@@ -1,7 +1,5 @@
 from pathlib import Path
-from enumPHP import Seperator, State
-from analyzePHP import  filterText, getPHPStrings, remove_comments
-from writer import writeStringsToTranslationFilePHP
+from analyzePHP import  analyzeStrings, remove_comments
 import glob
 
 class StringChecker:
@@ -17,43 +15,30 @@ class StringChecker:
         files = glob.glob(folder, recursive=True)
         return files
 
-    def getExpression(self, fileName):
-        templateName = self.getFileNameBase(fileName)
-        expression = ''
+    def getStrings(self, filePath, variables=False):
+        fileName = self.getFileNameBase(filePath)
         blacklist = ['$private', '$verbs', '$inputRules']
-        with open(fileName) as text:
-            constantArr = []
+        php_tags = ['<?php', '<?', '?>']
+
+        with open(filePath) as text:
             data = remove_comments(text.read())
-            for char in data:
-                expression = ''.join([expression, char])
-                if char is Seperator.END.value:
-                    result = filterText(expression)
-                    expression = ''
-                    if result is not None:
-                        string = getPHPStrings(result, blacklist)
-                        if string == State.CONST_DOUBLE_QUOTE.value or State.CONST_SINGLE_QUOTE.value:
-                            arr = result.split("=")
-                            constant = arr[0][5:].strip()
-                            sentence = arr[1].strip()
-                            constantArr.append(constant)
-                            sentence = sentence.replace(" ", '_')                            
-                            new_string = ''.join([arr[0].strip(), templateName, '__', sentence])
-                        
-                        elif string == State.STRING_SINGLE_QUOTE.value or State.STRING_DOUBLE_QUOTE.value:
-                            arr = result.split("=")
-                            variable = arr[0].replace("$","").strip()
-                            sentence = arr[1].strip()
+        for item in php_tags:
+            data = data.replace(item, '')
+        
+        expressions = data.split(';')
+        for sentence in expressions:
+            blacklisted = False
+            if any(word in sentence for word in blacklist):
+                blacklisted = True
+            if blacklisted == False and "".join([fileName,'__']) not in sentence and "''" not in sentence and '""' not in sentence and "' '" not in sentence and '" "' not in sentence and sentence and sentence is not None:
+                word_list = sentence.split('=', 1)
+                result = [x.strip() for x in word_list]
+                analyzeStrings(result, filePath, fileName, variables=False)
+        
+        return True
 
-                            sentence = sentence.replace(";", ");")
-
-                            new_string = ''.join(
-                                [arr[0].strip(), 'trans(', templateName, '__', sentence])
-                        
-                            
-                        
-
-    # Get filename without path, prefix or extension
-    def getFileNameBase(self, fileName): 
-        fileName = Path(fileName).stem # remove path and extension
-        fileName = fileName.replace(self.filePrefix, '') # remove prefix
-        return fileName
+   # Get filename without path, prefix or extension
+    def getFileNameBase(self, filePath):
+        filePath = Path(filePath).stem  # remove path and extension
+        filePath = filePath.replace(self.filePrefix, '')  # remove prefix
+        return filePath

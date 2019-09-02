@@ -1,6 +1,79 @@
-from enumPHP import Seperator, State
+from writer import translateLaravel, replace_string, writeVariables
 import re
-counter = 1
+
+
+def returnString(expressionList, filePath, fileName, variables=False):
+    new_string = ''
+    singleQuotesCount = expressionList[1].count("'")
+    doubleQuotesCount = expressionList[1].count('"')
+    if singleQuotesCount == 2 and expressionList[1].startswith("'") and expressionList[1].endswith("'"):
+        new_string = translateLaravel(fileName, expressionList[1])
+        
+    elif doubleQuotesCount == 2 and expressionList[1].startswith('"') and expressionList[1].endswith('"'):
+        new_string = translateLaravel(fileName, expressionList[1])
+        
+    elif "." in expressionList[1] and ('"' in expressionList[1] or "'" in expressionList[1]):
+        variable_list = expressionList[1].split('.')
+        for item in variable_list:
+            item = item.strip()
+            if item.startswith('"') or item.startswith("'"):
+                if len(item>1):
+                    if variables == True:
+                        new_string = translateLaravel(fileName, item)
+                    writeVariables(fileName,item)
+        
+    elif "=>" in expressionList[1]:
+        assoc = expressionList[1].split("=>")
+        assoc = assoc[1::2]
+        php_tags = str.maketrans("", "", "[],")
+
+        assoc = [s.translate(php_tags) for s in assoc]
+        for item in assoc:
+            item = item.strip()
+            singleQuotesCount = item.count("'")
+            doubleQuotesCount = item.count('"')
+            if singleQuotesCount == 2 and item.startswith("'") and item.endswith("'"):
+                new_string = translateLaravel(fileName, item)
+            elif doubleQuotesCount == 2 and item.startswith('"') and item.endswith('"'):
+                new_string = translateLaravel(fileName, item)
+        
+    elif len(expressionList) == 1 and '(' in expressionList and variables == False:
+        if expressionList.count('"') % 2 == 0 or  expressionList.count("'") % 2 == 0:
+            if "$" in expressionList:
+                writeVariables(fileName, item)
+                
+    
+    return new_string
+
+
+def analyzeStrings(expressionList, filePath, fileName, variables=False):
+    expression = ''
+    result = ''
+    if len(expressionList)==2:
+        expression = expressionList[1]
+        result = returnString(expressionList, filePath, fileName, variables=False)
+
+        
+    elif len(expressionList) == 1 and  "()" not in expressionList[0] and "(" in expressionList[0]:
+        if "response->" in expressionList[0]:
+            expression = expressionList[0]
+            response = expressionList[0].replace('(', '(trans(') 
+            result = response.replace(')', '))')      
+            
+            if "'" in result or '"' in result:
+                result = returnString(result, filePath, fileName)
+
+        if expression is not None and result is not None:
+            #replace_string(filePath, expression, result)
+   
+        if "'" in expression and expression.count("'") % 2 == 0:
+            result = returnString(expressionList, filePath, fileName, variables=False)
+        
+        return True
+
+
+                        
+
 
 
 def remove_comments(string):
@@ -17,58 +90,3 @@ def remove_comments(string):
         else:  # otherwise, we will return the 1st group
             return match.group(1)  # captured quoted-string
     return regex.sub(_replacer, string)
-
-def filterText(expression):
-    counter = 0
-    sentence = ''
-    for char in expression:
-        counter += 1
-        sentence = ''.join([sentence, char])
-        if char is Seperator.NEW_LINE.value:
-            if  Seperator.EQUAL.value not in sentence:
-                expression = expression[counter:]
-                counter = 0
-                sentence = ''
-            else:
-                break
-    return expression
-
-
-def getPHPStrings(expression, blacklist):
-    blacklisted = False
-
-    for item in blacklist:
-        if item in expression:
-            blacklisted = True
-            break
-
-    if blacklisted ==False:
-        singleQuotesCount = expression.count(Seperator.SINGLE_QUOTE.value)
-        doubleQuotesCount = expression.count(Seperator.DOUBLE_QUOTE.value)
-        expression = expression.replace(" ", "")
-
-        if doubleQuotesCount == 2 and expression.endswith(Seperator.DOUBLE_QUOTE_END.value) and Seperator.DOUBLE_QUOTE_EQUAL.value in expression:
-            if expression.startswith(Seperator.CONST.value):
-                return State.CONST_DOUBLE_QUOTE.value
-            else: 
-                return State.STRING_DOUBLE_QUOTE.value
-        elif singleQuotesCount == 2 and expression.endswith(Seperator.SINGLE_QUOTE_END.value) and Seperator.SINGLE_QUOTE_EQUAL.value in expression:
-            if expression.startswith(Seperator.CONST.value):
-                return State.CONST_SINGLE_QUOTE.value
-            else: 
-                return State.STRING_SINGLE_QUOTE.value
-        
-        elif Seperator.SINGLE_QUOTE_ASSOC.value in expression:
-            return State.SINGLE_QUOTE_ASSOC_ARRAY.value
-
-        elif  Seperator.DOUBLE_QUOTE_ASSOC.value in expression:
-            return State.DOUBLE_QUOTE_ASSOC_ARRAY.value
-
-        elif Seperator.SINGLE_QUOTE_DOT.value in expression or Seperator.DOT_SINGLE_QUOTE.value in expression:
-            return State.SINGLE_QUOTE_STRING_VARIABLE.value
-            
-        elif Seperator.DOUBLE_QUOTE_DOT.value in expression or Seperator.DOT_DOUBLE_QUOTE.value in expression: 
-            return State.DOUBLE_QUOTE_STRING_VARIABLE.value
-            
-        elif Seperator.RESPONSE.value in expression and Seperator.VOID.value not in expression:
-            return State.RESPONSE.value
