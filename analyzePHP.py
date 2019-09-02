@@ -63,8 +63,8 @@ def analyzeStrings(expressionList, filePath, fileName, variables=False):
             if "'" in result or '"' in result:
                 result = returnString(result, filePath, fileName)
 
-        if expression is not None and result is not None:
-            #replace_string(filePath, expression, result)
+        # if expression is not None and result is not None:
+        #     replace_string(filePath, expression, result)
    
         if "'" in expression and expression.count("'") % 2 == 0:
             result = returnString(expressionList, filePath, fileName, variables=False)

@@ -5,14 +5,8 @@ from time import sleep
 
 
 def replace_string(filePath, expression, result):
-	print(result)
-	result = result.replace(" ", "")
-	if expression and result and expression is not None and result is not None:
-		with fileinput.FileInput(filePath, inplace=True) as file:
-			for line in file:
-				line = line.rstrip()
-				if expression in line:
-					print(line.replace(line, result), end='')
+	for line in fileinput.input(filePath, inplace=1):
+		print(line.replace(expression, result).rstrip(),)
 
 
 def translateLaravel(filename, expression):
